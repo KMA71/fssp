@@ -19,7 +19,24 @@ import java.util.Map;
 public class RuCaptcha {
     SSLContext currentSc;
 
-    public String sendReqToRecognize(String captchaInBase64) {
+    public String recognize(String captchaInBase64) {
+        try {
+            String response = sendReqToRecognize(captchaInBase64);
+            String idOfRequest = response.substring(response.indexOf("|") + 1);
+            Thread.sleep(5000);
+            String respOfRecognized = getRecognized(idOfRequest);
+            if(respOfRecognized.contains("NOT_READY")) {
+                Thread.sleep(5000);
+                respOfRecognized = getRecognized(idOfRequest);
+            }
+            return respOfRecognized.substring(response.indexOf("|") + 1);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+
+    private String sendReqToRecognize(String captchaInBase64) {
         disableSSL();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -42,7 +59,7 @@ public class RuCaptcha {
         return response.body();
     }
 
-    public String getRecognized(String idOfRequest) {
+    private String getRecognized(String idOfRequest) {
         disableSSL();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -62,7 +79,6 @@ public class RuCaptcha {
         return response.body();
     }
 
-    /**вспомогательные методы*/
     private Map<String, String> buildBody(String captchaInBase64) {
         Map<String, String> formData = new HashMap<>();
         formData.put("method", "base64");
