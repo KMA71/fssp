@@ -74,4 +74,23 @@ public class Captcha extends BasePage {
         RuCaptcha ruCaptcha = new RuCaptcha();
         return ruCaptcha.recognize(src);
     }
+
+
+    @FindBy(how = How.XPATH, using = "//*[@id=\"ncapchaAudio\"]")
+    private WebElement ncapchaAudio;
+    public String getRequest(){
+        click(ncapchaAudio);
+        pullAllInfoLogs();
+        return "";
+    }
+
+    public String getAudioCaptchaUrl() {
+        click(ncapchaAudio);
+        return super.getAudioCaptchaUrl();
+    }
+
+    public String getFileWavUrl(String url) {
+        driver.get(url);
+        return super.getFileWavUrlUrl();
+    }
 }

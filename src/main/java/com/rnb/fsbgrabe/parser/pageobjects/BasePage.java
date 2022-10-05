@@ -3,6 +3,8 @@ package com.rnb.fsbgrabe.parser.pageobjects;
 import com.rnb.fsbgrabe.parser.Parser;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -11,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class BasePage {
@@ -58,6 +62,57 @@ public class BasePage {
         }
 
         return hashMD5;
+    }
+
+    public List<LogEntry> getLogList() {
+        return driver.manage().logs().get(LogType.PERFORMANCE).getAll();
+    }
+
+    public List<String> pullAllInfoLogs() {
+        List<LogEntry> netLogs = getLogList();
+        List<String> logs = new ArrayList<>();
+        for(LogEntry entry : netLogs) {
+            logs.add(entry.getTimestamp() + " " + entry.getLevel() + " " + entry.getMessage());
+        }
+        return logs;
+    }
+
+    public List<String> pullExtraInfoLogs() {
+        List<String> logs = pullAllInfoLogs();
+        //logs.removeIf(s -> (!s.contains("requestWillBeSentExtraInfo")));      //30.06.2022 При работе на dev удаляет нужную строку с номером сделки
+        logs.removeIf(s -> (!s.contains("requestWillBeSent")));                 // Так работает на обоих стендах
+        return logs;
+    }
+
+    /**
+     * Получение url для запроса получения url файла
+     * @return
+     */
+    public String getAudioCaptchaUrl() {
+        List<String> netLogs = pullExtraInfoLogs();
+        netLogs.removeIf(s -> (!s.contains("https://is-node5.fssp.gov.ru/get_audio_captcha")));
+        String result = netLogs.get(0);
+
+        result = result.substring(result.indexOf("https://is-node5.fssp.gov.ru/get_audio_captcha"));
+        result = result.substring(0, result.indexOf("\"},"));
+        return result;
+    }
+
+    /**
+     * Получение Url для скачивания файла
+     * @return
+     */
+    public String getFileWavUrlUrl() {
+        List<String> netLogs = pullExtraInfoLogs();
+        for (String val: netLogs) {
+            System.out.println(val);
+        }
+//        netLogs.removeIf(s -> (!s.contains("https://is-node5.fssp.gov.ru/get_audio_captcha")));
+//        String result = netLogs.get(0);
+//
+//        result = result.substring(result.indexOf("https://is-node5.fssp.gov.ru/get_audio_captcha"));
+//        result = result.substring(0, result.indexOf("\"},"));
+        return "result";
     }
 
 }

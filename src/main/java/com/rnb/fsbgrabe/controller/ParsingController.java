@@ -2,18 +2,16 @@ package com.rnb.fsbgrabe.controller;
 
 import com.rnb.fsbgrabe.capcha.RuCaptcha;
 import com.rnb.fsbgrabe.models.EnforcementProceeding;
-import com.rnb.fsbgrabe.models.Legal;
 import com.rnb.fsbgrabe.models.Person;
 import com.rnb.fsbgrabe.models.Response;
 import com.rnb.fsbgrabe.parser.Parser;
 import com.rnb.fsbgrabe.parser.pageobjects.Captcha;
+import com.rnb.fsbgrabe.parser.pageobjects.Legal;
 import com.rnb.fsbgrabe.parser.pageobjects.Natural;
-import com.rnb.fsbgrabe.parser.pageobjects.StartPage;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 public class ParsingController {
@@ -60,19 +58,37 @@ public class ParsingController {
     }
 
     @GetMapping("/legal")
-    public Legal legal(@RequestParam(value = "inn", defaultValue = "7727672110") String inn) {
-        //TODO 1. Отправка запроса на странице https://fssp.gov.ru/iss/ip/ по ИНН (например, 7727672110)
-        //TODO 2. Разобрать ответ по Legal
-        //TODO в конструктор передавать полученные при парсинге страницы значения
-        StartPage sp = new StartPage();
-//        sp.chooseByInn();
-        sp.sendYaRequest();
-        sp.tearsDown();
-        return new Legal("Должник", "Исполнительное производство", "Реквизиты исполнительного документа",
-                "Дата, причина окончания или прекращения ИП", "Сервис",
-                "Предмет исполнения, сумма непогашенной задолженности", "Отдел судебных приставов",
-                "Судебный пристав-исполнитель, телефон для получения информации"
-        );
+    public String legal(@RequestParam(value = "inn") String inn) {
+        Parser parser = new Parser();
+        RemoteWebDriver driver = parser.getDriver();
+        Legal legal = new Legal(driver);
+
+        // Создаем генератор ответа
+        Response response = new Response();
+
+        String json;
+
+        // Проверяем md5
+        if (!legal.checkMd5()) {     // Не совпадает md5
+            json = response.getJson("Не совпадает md5 сумма");
+        } else {
+            legal.setInn(inn);
+
+
+            Captcha captcha = legal.clickFind();
+            boolean isCaptchaSuccess = captcha.evaluateCaptcha();
+
+            if (!isCaptchaSuccess) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
+                json = response.getJson("Ошибка капчи");
+            } else {
+                // Руками ввести капчу
+                // Получаем страницу результата
+                EnforcementProceeding enforcementProceeding = new EnforcementProceeding(driver);
+                json = response.getJson(enforcementProceeding.getListRecords());
+            }
+        }
+        parser.tearsDown();
+        return json;
     }
 
     @GetMapping("/recognize")
@@ -87,5 +103,46 @@ public class ParsingController {
     public String home(@RequestParam(value = "name", defaultValue = "Home") String name) {
         Person person = new Person();
         return name + ", sweet " + name;
+    }
+
+    @GetMapping("/wav")
+    public String wav(@RequestParam(value = "inn", defaultValue = "7727672110") String inn) {
+        Parser parser = new Parser();
+        RemoteWebDriver driver = parser.getDriver();
+        Legal legal = new Legal(driver);
+
+        // Создаем генератор ответа
+        Response response = new Response();
+
+        String json;
+
+        // Проверяем md5
+        if (!legal.checkMd5()) {     // Не совпадает md5
+            json = response.getJson("Не совпадает md5 сумма");
+        } else {
+            legal.setInn(inn);
+
+
+            Captcha captcha = legal.clickFind();
+
+            String audioCaptchaUrl = captcha.getAudioCaptchaUrl();
+            if(!audioCaptchaUrl.isEmpty()) {
+                System.out.println(audioCaptchaUrl);
+                return audioCaptchaUrl;
+            }
+
+            boolean isCaptchaSuccess = captcha.evaluateCaptcha();
+
+            if (!isCaptchaSuccess) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
+                json = response.getJson("Ошибка капчи");
+            } else {
+                // Руками ввести капчу
+                // Получаем страницу результата
+                EnforcementProceeding enforcementProceeding = new EnforcementProceeding(driver);
+                json = response.getJson(enforcementProceeding.getListRecords());
+            }
+        }
+        parser.tearsDown();
+        return json;
     }
 }
