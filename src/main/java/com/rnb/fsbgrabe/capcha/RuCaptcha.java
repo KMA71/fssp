@@ -23,10 +23,10 @@ public class RuCaptcha {
         try {
             String response = sendReqToRecognize(captchaInBase64);
             String idOfRequest = response.substring(response.indexOf("|") + 1);
-            Thread.sleep(5000);
+            Thread.sleep(10000);
             String respOfRecognized = getRecognized(idOfRequest);
             if(respOfRecognized.contains("NOT_READY")) {
-                Thread.sleep(5000);
+                Thread.sleep(2000);
                 respOfRecognized = getRecognized(idOfRequest);
             }
             return respOfRecognized.substring(response.indexOf("|") + 1);
@@ -84,6 +84,7 @@ public class RuCaptcha {
         formData.put("method", "base64");
         formData.put("key", "a2d0558e771d92987dd47a4b305b4d0f");
         formData.put("body", captchaInBase64);
+        formData.put("language", "1");
         return formData;
     }
     private String getFormDataAsString(Map<String, String> formData) {

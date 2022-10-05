@@ -5,9 +5,11 @@ import com.rnb.fsbgrabe.models.EnforcementProceeding;
 import com.rnb.fsbgrabe.models.Legal;
 import com.rnb.fsbgrabe.models.Person;
 import com.rnb.fsbgrabe.models.Response;
+import com.rnb.fsbgrabe.parser.Parser;
 import com.rnb.fsbgrabe.parser.pageobjects.Captcha;
 import com.rnb.fsbgrabe.parser.pageobjects.Natural;
 import com.rnb.fsbgrabe.parser.pageobjects.StartPage;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,8 +19,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ParsingController {
 
     @GetMapping("/person")
-    public String getPerson() {
-        Natural natural = new Natural();
+    public String getPerson(@RequestParam(value = "region") String region,
+                            @RequestParam(value = "lastName") String lastName,
+                            @RequestParam(value = "firstName") String firsName,
+                            @RequestParam(value = "patronymic") String patronymic,
+                            @RequestParam(value = "birthDate") String birthDate){
+        Parser parser = new Parser();
+        RemoteWebDriver driver = parser.getDriver();
+        Natural natural = new Natural(driver);
 
         // Создаем генератор ответа
         Response response = new Response();
@@ -29,11 +37,11 @@ public class ParsingController {
         if (!natural.checkMd5()) {     // Не совпадает md5
             json = response.getJson("Не совпадает md5 сумма");
         } else {
-            natural.setRegion("Республика Башкортостан");
-            natural.setLastName("Фаттахов");
-            natural.setFirstName("Наргиз");
-            natural.setPatronymic("Фаилевич");
-            natural.setBirthDate("13.03.1998");
+            natural.setRegion(region);
+            natural.setLastName(lastName);
+            natural.setFirstName(firsName);
+            natural.setPatronymic(patronymic);
+            natural.setBirthDate(birthDate);
 
             Captcha captcha = natural.clickFind();
             boolean isCaptchaSuccess = captcha.evaluateCaptcha();
@@ -43,11 +51,11 @@ public class ParsingController {
             } else {
                 // Руками ввести капчу
                 // Получаем страницу результата
-                EnforcementProceeding enforcementProceeding = new EnforcementProceeding();
+                EnforcementProceeding enforcementProceeding = new EnforcementProceeding(driver);
                 json = response.getJson(enforcementProceeding.getListRecords());
             }
-
         }
+        parser.tearsDown();
         return json;
     }
 

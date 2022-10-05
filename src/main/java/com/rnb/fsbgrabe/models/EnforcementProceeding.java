@@ -1,6 +1,7 @@
 package com.rnb.fsbgrabe.models;
 
 import com.rnb.fsbgrabe.parser.Parser;
+import com.rnb.fsbgrabe.parser.pageobjects.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
@@ -8,10 +9,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
 
-public class EnforcementProceeding extends Parser {
+public class EnforcementProceeding extends BasePage {
     private ArrayList<Record> listRecords = new ArrayList<Record>();
 
-    public EnforcementProceeding() {
+    public EnforcementProceeding(RemoteWebDriver driver) {
+        super(driver);
         PageFactory.initElements(this.driver, this);
         // Ожидаем переход на страницу результата
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[text()=\"Банк данных исполнительных производств\"]")));

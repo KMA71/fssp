@@ -9,12 +9,12 @@ import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-public class Legal extends Parser implements Md5 {
-
+public class Legal extends BasePage implements Md5 {
 
     private static final String md5Summ  = "84be2bcbe69d88952a394723bef4042e";
 
     public Legal(RemoteWebDriver driver) {
+        super(driver);
         driver.get("https://fssp.gov.ru/iss/ip/");
         PageFactory.initElements(this.driver, this);
         click(driver.findElement(By.xpath("//*[@id=\"r5\"]/..")));
@@ -50,7 +50,7 @@ public class Legal extends Parser implements Md5 {
 
     public Captcha clickFind() {
         click(btnSbm);
-        return new Captcha();
+        return new Captcha(driver);
     }
 
 }

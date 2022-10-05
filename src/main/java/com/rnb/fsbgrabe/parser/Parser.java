@@ -24,7 +24,10 @@ import java.util.logging.Level;
 
 public class Parser {
     protected RemoteWebDriver driver;
-    protected WebDriverWait wait;
+
+    public RemoteWebDriver getDriver() {
+        return driver;
+    }
 
 
     public Parser() {
@@ -68,45 +71,8 @@ public class Parser {
         driver.manage().window().setSize(new Dimension(1920, 1080));
         driver.manage().deleteAllCookies();
 
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     }
 
-    public void click(WebElement elem) {
-        elem.click();
-    }
-
-    public void setTextField(WebElement elem, String value){
-        click(elem);
-        elem.sendKeys(Keys.CONTROL + "a");
-        elem.sendKeys(value);
-    }
-
-    public String getCyrillic(int len) {
-        String upperS = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЭЮЯ";
-        String lowerS = "абвгдеёжзийклмнопрстуфхцчшщъьэюя";
-        StringBuffer randString = new StringBuffer(len);
-
-        randString.append(upperS.charAt(new Random().nextInt(upperS.length())));
-        for (int i = 1; i < len; i++) {
-            randString.append(lowerS.charAt(new Random().nextInt(lowerS.length())));
-        }
-
-        return randString.toString();
-    }
-
-    public String get16Md5(String inputString) {
-        String hashMD5 = "";
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] messageDigest = md.digest(inputString.getBytes(StandardCharsets.UTF_8));
-            BigInteger hashNum = new BigInteger(1, messageDigest);
-            hashMD5 = hashNum.toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            //e.printStackTrace();
-        }
-
-        return hashMD5;
-    }
     public void tearsDown() {
         if (driver != null) {
             driver.manage().deleteAllCookies();

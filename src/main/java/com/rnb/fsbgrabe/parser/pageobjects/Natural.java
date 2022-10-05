@@ -14,10 +14,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
  * Работа с физлицами
  */
 
-public class Natural extends Parser implements Md5{
+public class Natural extends BasePage implements Md5{
     private static final String md5Summ  = "849824d12f6055b0f696930569543f0a";
 
-    public Natural() {
+    public Natural(RemoteWebDriver driver) {
+        super(driver);
         driver.get("https://fssp.gov.ru/iss/ip/");
         PageFactory.initElements(this.driver, this);
 
@@ -96,6 +97,6 @@ public class Natural extends Parser implements Md5{
 
     public Captcha clickFind() {
         click(btnSbm);
-        return new Captcha();
+        return new Captcha(driver);
     }
 }
