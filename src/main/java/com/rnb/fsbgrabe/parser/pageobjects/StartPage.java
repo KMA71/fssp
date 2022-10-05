@@ -9,8 +9,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 public class StartPage extends Parser {
 
     public StartPage() {
-//        driver.get("https://ya.ru");
-        driver.get("https://fssp.gov.ru/iss/ip/");
+        driver.get("https://ya.ru");
+//        driver.get("https://fssp.gov.ru/iss/ip/");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
