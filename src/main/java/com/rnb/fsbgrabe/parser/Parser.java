@@ -47,7 +47,7 @@ public class Parser {
 
         try {
             driver = new RemoteWebDriver(
-                    URI.create("http://10.77.51.99:4444/wd/hub").toURL(),
+                    URI.create("http://10.77.51.98:4444/wd/hub").toURL(),
 //                    URI.create("http://127.0.0.1:4444/wd/hub").toURL(),
                     capabilities
             );
