@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class EnforcementProceeding extends Parser {
     private ArrayList<Record> listRecords = new ArrayList<Record>();
 
-    public EnforcementProceeding(RemoteWebDriver driver) {
+    public EnforcementProceeding() {
         PageFactory.initElements(this.driver, this);
         // Ожидаем переход на страницу результата
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[text()=\"Банк данных исполнительных производств\"]")));

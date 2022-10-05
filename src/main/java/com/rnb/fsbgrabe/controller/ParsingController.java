@@ -1,8 +1,12 @@
 package com.rnb.fsbgrabe.controller;
 
 import com.rnb.fsbgrabe.capcha.RuCaptcha;
+import com.rnb.fsbgrabe.models.EnforcementProceeding;
 import com.rnb.fsbgrabe.models.Legal;
 import com.rnb.fsbgrabe.models.Person;
+import com.rnb.fsbgrabe.models.Response;
+import com.rnb.fsbgrabe.parser.pageobjects.Captcha;
+import com.rnb.fsbgrabe.parser.pageobjects.Natural;
 import com.rnb.fsbgrabe.parser.pageobjects.StartPage;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,11 +15,40 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 public class ParsingController {
-    private static final String template = "Hello, %s";
 
     @GetMapping("/person")
-    public Person getPerson() {
-        return new Person();
+    public String getPerson() {
+        Natural natural = new Natural();
+
+        // Создаем генератор ответа
+        Response response = new Response();
+
+        String json;
+
+        // Проверяем md5
+        if (!natural.checkMd5()) {     // Не совпадает md5
+            json = response.getJson("Не совпадает md5 сумма");
+        } else {
+            natural.setRegion("Республика Башкортостан");
+            natural.setLastName("Фаттахов");
+            natural.setFirstName("Наргиз");
+            natural.setPatronymic("Фаилевич");
+            natural.setBirthDate("13.03.1998");
+
+            Captcha captcha = natural.clickFind();
+            boolean isCaptchaSuccess = captcha.evaluateCaptcha();
+
+            if (!isCaptchaSuccess) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
+                json = response.getJson("Ошибка капчи");
+            } else {
+                // Руками ввести капчу
+                // Получаем страницу результата
+                EnforcementProceeding enforcementProceeding = new EnforcementProceeding();
+                json = response.getJson(enforcementProceeding.getListRecords());
+            }
+
+        }
+        return json;
     }
 
     @GetMapping("/legal")
