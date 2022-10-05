@@ -24,8 +24,8 @@ public class ParsingController {
         //TODO 2. Разобрать ответ по Legal
         //TODO в конструктор передавать полученные при парсинге страницы значения
         StartPage sp = new StartPage();
-        sp.chooseByInn();
-//        sp.sendYaRequest();
+//        sp.chooseByInn();
+        sp.sendYaRequest();
         sp.tearsDown();
         return new Legal("Должник", "Исполнительное производство", "Реквизиты исполнительного документа",
                 "Дата, причина окончания или прекращения ИП", "Сервис",
@@ -41,5 +41,10 @@ public class ParsingController {
         String result = ruCaptcha.recognize(captcha);
         // OK|в7с76
         return result;
+    }
+    @GetMapping("/")
+    public String home(@RequestParam(value = "name", defaultValue = "Home") String name) {
+        Person person = new Person();
+        return name + ", sweet " + name;
     }
 }
