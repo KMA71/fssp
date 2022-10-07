@@ -21,7 +21,7 @@ public class EnforcementProceeding extends BasePage {
         // Ожидаем переход на страницу результата
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[text()=\"Банк данных исполнительных производств\"]")));
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class=\"results-frame\"]")));
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class=\"results-frame\"]")));
 
         listRecords.clear();        // Очищаем результаты проверки
 
