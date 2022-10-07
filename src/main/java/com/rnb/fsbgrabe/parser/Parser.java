@@ -1,6 +1,7 @@
 package com.rnb.fsbgrabe.parser;
 
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
@@ -20,11 +21,20 @@ public class Parser {
         return driver;
     }
 
-    private String proxy = "185.14.194.230:1085";
+//    private String proxyAddress = "110.235.250.155:1080";
+    private String proxyAddress = "94.154.113.38:8085";
 
     public Parser() {
+//Прокси
+//    Proxy proxy = new Proxy();
+//    proxy.setHttpProxy(proxyAddress);
+//    proxy.setSocksProxy(proxyAddress);
+//    proxy.setSocksVersion(5);
+
 //Запуск на удалённом сервере
         final DesiredCapabilities capabilities = new DesiredCapabilities();
+
+//        capabilities.setCapability(CapabilityType.PROXY, proxy);
 
         capabilities.setBrowserName("chrome");
         capabilities.setVersion("97.0");
