@@ -22,7 +22,7 @@ public class Parser {
     }
 
 //    private String proxyAddress = "110.235.250.155:1080";
-    private String proxyAddress = "94.154.113.38:8085";
+    private String proxyAddress = "83.97.119.72:8085";
 
     public Parser() {
 //Прокси
@@ -31,12 +31,12 @@ public class Parser {
 
 //Запуск на удалённом сервере
         final DesiredCapabilities capabilities = new DesiredCapabilities();
-
-        Proxy proxy = new Proxy();
-        proxy.setAutodetect(false);
-        proxy.setHttpProxy(proxyAddress);
-        proxy.setSslProxy(proxyAddress);
-        capabilities.setCapability("proxy", proxy);
+//
+//        Proxy proxy = new Proxy();
+//        proxy.setAutodetect(false);
+//        proxy.setHttpProxy(proxyAddress);
+//        proxy.setSslProxy(proxyAddress);
+//        capabilities.setCapability("proxy", proxy);
 //        capabilities.setCapability(CapabilityType.PROXY, proxy);
 
         capabilities.setBrowserName("chrome");
