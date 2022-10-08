@@ -12,10 +12,12 @@ class FsbgrabeApplicationTests {
     void contextLoads() throws InterruptedException {
         Parser parser = new Parser();
         RemoteWebDriver driver = parser.getDriver();
-        driver.get("https:/ya.ru");
-        Thread.sleep(3000);
-        parser.tearsDown();
 
+        driver.get("https://2ip.ru");
+        String pageSource = driver.getPageSource();
+        System.out.println(pageSource);
+
+        parser.tearsDown();
     }
 
 }
