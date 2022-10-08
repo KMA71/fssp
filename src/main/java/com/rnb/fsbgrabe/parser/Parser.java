@@ -26,14 +26,17 @@ public class Parser {
 
     public Parser() {
 //Прокси
-//    Proxy proxy = new Proxy();
-//    proxy.setHttpProxy(proxyAddress);
 //    proxy.setSocksProxy(proxyAddress);
 //    proxy.setSocksVersion(5);
 
 //Запуск на удалённом сервере
         final DesiredCapabilities capabilities = new DesiredCapabilities();
 
+        Proxy proxy = new Proxy();
+        proxy.setAutodetect(false);
+        proxy.setHttpProxy(proxyAddress);
+        proxy.setSslProxy(proxyAddress);
+        capabilities.setCapability("proxy", proxy);
 //        capabilities.setCapability(CapabilityType.PROXY, proxy);
 
         capabilities.setBrowserName("chrome");

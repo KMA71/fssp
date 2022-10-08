@@ -14,7 +14,6 @@ class FsbgrabeApplicationTests {
         RemoteWebDriver driver = parser.getDriver();
 
         driver.get("https://2ip.ru");
-        Thread.sleep(3000);
         String pageSource = driver.getPageSource();
         System.out.println(pageSource);
 
