@@ -1,0 +1,8 @@
+
+curl -v -x dproxy.site:13742 --proxy-user uZ2ufG:pEvUPPaD1Gec -L "https://is-node1.fssp.gov.ru/ajax_search?callback=jQuery34009529047275371543_1663841626886&system=ip&is%5Bextended%5D=1&nocache=1&is%5Bvariant%5D=1&is%5Bregion_id%5D%5B0%5D=31&is%5Blast_name%5D=%D0%9A%D0%BE%D1%80%D0%B5%D0%BD%D0%B5%D0%B2&is%5Bfirst_name%5D=%D0%9C%D0%B8%D1%85%D0%B0%D0%B8%D0%BB&is%5Bdrtr_name%5D=&is%5Bip_number%5D=&is%5Bpatronymic%5D=%D0%AE%D1%80%D1%8C%D0%B5%D0%B2%D0%B8%D1%87&is%5Bdate%5D=21.05.1991&is%5Baddress%5D=&is%5Bid_number%5D=&is%5Bid_type%5D%5B0%5D=&is%5Bid_issuer%5D=&is%5Binn%5D=&_=1663841626889"
+
+
+https://is-node1.fssp.gov.ru/ajax_search?callback=jQuery34009529047275371543_1663841626886&system=ip&is%5Bextended%5D=1&nocache=1&is%5Bvariant%5D=1&is%5Bregion_id%5D%5B0%5D=31&is%5Blast_name%5D=%D0%9A%D0%BE%D1%80%D0%B5%D0%BD%D0%B5%D0%B2&is%5Bfirst_name%5D=%D0%9C%D0%B8%D1%85%D0%B0%D0%B8%D0%BB&is%5Bdrtr_name%5D=&is%5Bip_number%5D=&is%5Bpatronymic%5D=%D0%AE%D1%80%D1%8C%D0%B5%D0%B2%D0%B8%D1%87&is%5Bdate%5D=21.05.1991&is%5Baddress%5D=&is%5Bid_number%5D=&is%5Bid_type%5D%5B0%5D=&is%5Bid_issuer%5D=&is%5Binn%5D=&_=1663841626889
+
+/person?region=Республика%20Башкортостан&lastName=Фаттахов&firstName=Наргиз&patronymic=Фаилевич&birthDate=13.03.1998
+/person?region=Краснодарский%20край&lastName=Толстун&firstName=Павел&patronymic=Игоревич&birthDate=09.08.1991
