@@ -40,7 +40,8 @@ public class Parser {
 //        capabilities.setCapability(CapabilityType.PROXY, proxy);
 
         capabilities.setBrowserName("chrome");
-        capabilities.setVersion("97.0");
+//        capabilities.setVersion("97.0");
+        capabilities.setVersion("96.0");
         capabilities.setCapability("enableVNC", true);
         capabilities.setCapability("enableVideo", false);
         capabilities.setCapability("screenResolution", "1920x1080x24");
@@ -66,8 +67,8 @@ public class Parser {
 
         try {
             driver = new RemoteWebDriver(
-                    URI.create("http://10.77.51.98:4444/wd/hub").toURL(),
-//                    URI.create("http://127.0.0.1:4444/wd/hub").toURL(),
+//                    URI.create("http://10.77.51.98:4444/wd/hub").toURL(),
+                    URI.create("http://127.0.0.1:4444/wd/hub").toURL(),
                     capabilities
             );
         } catch (MalformedURLException e) {

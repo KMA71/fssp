@@ -21,7 +21,7 @@ public class ParsingController {
                             @RequestParam(value = "lastName") String lastName,
                             @RequestParam(value = "firstName") String firsName,
                             @RequestParam(value = "patronymic") String patronymic,
-                            @RequestParam(value = "birthDate") String birthDate){
+                            @RequestParam(value = "birthDate") String birthDate) {
         Parser parser = new Parser();
         RemoteWebDriver driver = parser.getDriver();
         Natural natural = new Natural(driver);
@@ -52,8 +52,7 @@ public class ParsingController {
                 EnforcementProceeding enforcementProceeding = new EnforcementProceeding(driver);
                 if (enforcementProceeding.isCorrect()) {
                     json = response.getJson(enforcementProceeding.getListRecords());
-                }
-                else {
+                } else {
                     json = response.getJson("Ошибка сервиса");
                 }
             }
@@ -91,8 +90,7 @@ public class ParsingController {
                 EnforcementProceeding enforcementProceeding = new EnforcementProceeding(driver);
                 if (enforcementProceeding.isCorrect()) {
                     json = response.getJson(enforcementProceeding.getListRecords());
-                }
-                else {
+                } else {
                     json = response.getJson("Ошибка сервиса");
                 }
             }
@@ -109,6 +107,7 @@ public class ParsingController {
         // OK|в7с76
         return result;
     }
+
     @GetMapping("/")
     public String home(@RequestParam(value = "name", defaultValue = "Homepage | ") String name) {
         Person person = new Person();
@@ -126,33 +125,26 @@ public class ParsingController {
 
         String json;
 
-        // Проверяем md5
-        if (!legal.checkMd5()) {     // Не совпадает md5
-            json = response.getJson("Не совпадает md5 сумма");
-        } else {
-            legal.setInn(inn);
+        legal.setInn(inn);
 
+        Captcha captcha = legal.clickFind();
 
-            Captcha captcha = legal.clickFind();
-
-            String audioCaptchaUrl = captcha.getAudioCaptchaUrl();
-            if(!audioCaptchaUrl.isEmpty()) {
-                System.out.println(audioCaptchaUrl);
-                return audioCaptchaUrl;
-            }
-
-            boolean isCaptchaSuccess = captcha.evaluateCaptcha();
-
-            if (!isCaptchaSuccess) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
-                json = response.getJson("Ошибка капчи");
-            } else {
-                // Руками ввести капчу
-                // Получаем страницу результата
-                EnforcementProceeding enforcementProceeding = new EnforcementProceeding(driver);
-                json = response.getJson(enforcementProceeding.getListRecords());
-            }
+        String audioCaptchaUrl = captcha.getAudioCaptchaUrl();
+        if (!audioCaptchaUrl.isEmpty()) {
+            System.out.println(audioCaptchaUrl);
         }
-        parser.tearsDown();
+
+        //сохранение wav-файла капчи audioCaptchaUrl ->
+        // 1. Перейти по ссылке вида https://is-node5.fssp.gov.ru/get_audio_captcha/?callback=jQuery340013218181603325707_1665350060547&_=1665350060549
+        // 2. Забрать адрес файла в ключе data вида /files/capcha/d5a7692c7b11e0a91bbe5123dcc670ee.wav
+        // 3. Составить ссылку из части до get_audio_captcha и п.2 вида https://is-node5.fssp.gov.ru/files/capcha/a3e4a0dab6cf639f0ddbdc62d8906c34.wav
+        // 4. Сохранить файл в папке с именем wav-файла (опционально - вместе с картинкой)
+
+        String captchaDownloadUrl = captcha.getCaptchaDownloadUrl(audioCaptchaUrl);
+        System.out.println("разобрать: " + captchaDownloadUrl);
+
+
+
         return json;
     }
 }

@@ -90,8 +90,21 @@ public class Captcha extends BasePage {
         return super.getAudioCaptchaUrl();
     }
 
+    //TODO для чего этот метод?
     public String getFileWavUrl(String url) {
         driver.get(url);
         return super.getFileWavUrlUrl();
     }
+
+    public String getCaptchaDownloadUrl(String url) {
+        driver.get(url);
+        String pageSource = driver.getPageSource();
+        String substr = pageSource.substring(pageSource.indexOf("/files"), pageSource.indexOf("err") - 3);
+        return substr;
+    }
+
+    public void downloadCaptchaWavFile(String url) {
+
+    }
+
 }
