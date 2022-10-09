@@ -141,9 +141,8 @@ public class ParsingController {
         // 4. Сохранить файл в папке с именем wav-файла (опционально - вместе с картинкой)
 
         String captchaDownloadUrl = captcha.getCaptchaDownloadUrl(audioCaptchaUrl);
-        System.out.println("разобрать: " + captchaDownloadUrl);
-
-
+        captcha.downloadCaptchaWavFile(captchaDownloadUrl);
+        json = captchaDownloadUrl;
 
         return json;
     }

@@ -10,6 +10,13 @@ import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
 public class Captcha extends BasePage {
 
     public Captcha(RemoteWebDriver driver) {
@@ -100,11 +107,17 @@ public class Captcha extends BasePage {
         driver.get(url);
         String pageSource = driver.getPageSource();
         String substr = pageSource.substring(pageSource.indexOf("/files"), pageSource.indexOf("err") - 3);
-        return substr;
+        String partUrl = url.substring(0, url.indexOf("/get_audio"));
+        String concatenated = partUrl + substr;
+        return concatenated;
     }
 
     public void downloadCaptchaWavFile(String url) {
-
+        try (InputStream in = new URL(url).openStream()) {
+            Files.copy(in, Paths.get(url), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
