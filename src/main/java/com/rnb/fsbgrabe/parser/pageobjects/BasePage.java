@@ -1,11 +1,14 @@
 package com.rnb.fsbgrabe.parser.pageobjects;
 
 import com.rnb.fsbgrabe.parser.Parser;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.math.BigInteger;
@@ -26,8 +29,21 @@ public class BasePage {
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(90));
     }
 
+    public void jsExec(String script, WebElement... elems) {
+        JavascriptExecutor js;
+        if (driver instanceof JavascriptExecutor & elems.length == 0) {
+            js = driver;
+            js.executeScript(script);
+        } else {
+            js = driver;
+            js.executeScript(script, elems[0]);
+        }
+    }
 
     public void click(WebElement elem) {
+
+        jsExec("arguments[0].scrollIntoView({block: \"end\", behavior: \"auto\"});", elem);
+
         elem.click();
     }
 

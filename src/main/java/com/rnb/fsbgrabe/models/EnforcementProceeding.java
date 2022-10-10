@@ -94,5 +94,26 @@ public class EnforcementProceeding extends BasePage {
         return  (driver.findElements(By.xpath("//div[@class=\"results-frame\"]//tbody")).size() > 0) ||
                 (driver.findElements(By.xpath("//h4[text()=\"По вашему запросу ничего не найдено\"]")).size() > 0);
     }
+
+    public boolean clickNext(){
+        try {
+//            Thread.sleep(5000);
+            Thread.sleep(1500);         //
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        if (driver.findElements(By.xpath("//a[text()=\"Следующая\"]")).size() > 0){
+            click(driver.findElement(By.xpath("//a[text()=\"Следующая\"]")));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean hasNext(){
+        return driver.findElements(By.xpath("//a[text()=\"Следующая\"]")).size() > 0;
+    }
+
+
+
 }
 
