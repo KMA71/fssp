@@ -199,9 +199,9 @@ public class ParsingController {
         return result;
     }
     @GetMapping("/")
-    public String home(@RequestParam(value = "name", defaultValue = "Home") String name) {
+    public String home(@RequestParam(value = "name", defaultValue = "Homepage | ") String name) {
         Person person = new Person();
-        return name + ", sweet " + name;
+        return name + "Cервис крутится, ФССП мутится";
     }
 
     @GetMapping("/wav")

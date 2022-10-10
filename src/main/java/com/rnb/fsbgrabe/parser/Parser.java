@@ -1,25 +1,17 @@
 package com.rnb.fsbgrabe.parser;
 
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.logging.Level;
 
 public class Parser {
@@ -29,10 +21,23 @@ public class Parser {
         return driver;
     }
 
+//    private String proxyAddress = "110.235.250.155:1080";
+    private String proxyAddress = "83.97.119.72:8085";
 
     public Parser() {
+//Прокси
+//    proxy.setSocksProxy(proxyAddress);
+//    proxy.setSocksVersion(5);
+
 //Запуск на удалённом сервере
         final DesiredCapabilities capabilities = new DesiredCapabilities();
+//
+//        Proxy proxy = new Proxy();
+//        proxy.setAutodetect(false);
+//        proxy.setHttpProxy(proxyAddress);
+//        proxy.setSslProxy(proxyAddress);
+//        capabilities.setCapability("proxy", proxy);
+//        capabilities.setCapability(CapabilityType.PROXY, proxy);
 
         capabilities.setBrowserName("chrome");
         capabilities.setVersion("97.0");
