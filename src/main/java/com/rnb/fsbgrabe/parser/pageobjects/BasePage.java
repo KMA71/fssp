@@ -26,7 +26,7 @@ public class BasePage {
 
     public BasePage(RemoteWebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(90));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
     public void jsExec(String script, WebElement... elems) {

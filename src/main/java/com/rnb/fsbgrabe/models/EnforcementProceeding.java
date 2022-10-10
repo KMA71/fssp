@@ -33,8 +33,7 @@ public class EnforcementProceeding extends BasePage {
             html = html.replaceAll("<br>", " ");
             html = html.replaceAll("<b>", "");
             html = html.replaceAll("</b>", "");
-            html = html.replaceAll("\"", "\\\"");       // Убираем символ кавычек
-
+            html = html.replaceAll("\"", "'");       // Убираем символ кавычек
             Record record;
             int column = 0;     // Номер столбца
             String[] values = new String[8];

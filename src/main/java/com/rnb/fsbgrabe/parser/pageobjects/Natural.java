@@ -39,6 +39,20 @@ public class Natural extends Subject implements Md5{
     }
 
     /**
+     * Проверка всех возможных ошибок и возврат имеющихся
+     * @return
+     */
+    public String getError(){
+        if (checkWait()){
+            return "Ваш запрос обрабатывается, попробуйте позже";
+        }
+        if (checkWait()){
+            return "Извините, что-то пошло не так. Вы можете связаться со службой поддержки через fssp-support@drivedigital.ru, если проблема не устранена.";
+        }
+        return "";
+    }
+
+    /**
      * Территориальные органы
      */
     @FindBy(how = How.XPATH, using = "//*[@id=\"region_id_chosen\"]")
