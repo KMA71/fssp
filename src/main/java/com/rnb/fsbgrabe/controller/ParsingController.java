@@ -143,6 +143,7 @@ public class ParsingController {
         String captchaDownloadUrl = captcha.getCaptchaDownloadUrl(audioCaptchaUrl);
         captcha.downloadCaptchaWavFile(captchaDownloadUrl);
         json = captchaDownloadUrl;
+        parser.tearsDown();
 
         return json;
     }
