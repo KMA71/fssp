@@ -20,64 +20,6 @@ import java.util.List;
 @RestController
 public class ParsingController {
 
-//    @GetMapping("/person")
-//    public String getPerson(@RequestParam(value = "region") String region,
-//                            @RequestParam(value = "lastName") String lastName,
-//                            @RequestParam(value = "firstName") String firsName,
-//                            @RequestParam(value = "patronymic") String patronymic,
-//                            @RequestParam(value = "birthDate") String birthDate){
-//        Parser parser = new Parser();
-//        RemoteWebDriver driver = parser.getDriver();
-//        Natural natural = new Natural(driver);
-//
-//        // Создаем генератор ответа
-//        Response response = new Response();
-//
-//        String json;
-//
-//        // Проверяем md5
-//        if (!natural.checkMd5()) {     // Не совпадает md5
-//            json = response.getJson("Не совпадает md5 сумма");
-//        } else {
-//            natural.setRegion(region);
-//            natural.setLastName(lastName);
-//            natural.setFirstName(firsName);
-//            natural.setPatronymic(patronymic);
-//            natural.setBirthDate(birthDate);
-//
-//            Captcha captcha = natural.clickFind();
-//            boolean isCaptchaSuccess;
-//            String error = "";
-//            EnforcementProceeding enforcementProceeding = null;
-//            ArrayList<Record> recordList = null;
-//            do {
-//                isCaptchaSuccess = captcha.evaluateCaptcha();
-//
-//                if (!isCaptchaSuccess) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
-////                    json = response.getJson("Ошибка капчи");
-//                    error = "Ошибка капчи";
-//                    break;
-//                } else {
-//                    // Руками ввести капчу
-//                    // Получаем страницу результата
-//                    enforcementProceeding = new EnforcementProceeding(driver);
-//                    if (enforcementProceeding.isCorrect()) {
-////                        json = response.getJson(enforcementProceeding.getListRecords());
-//                        recordList.addAll(enforcementProceeding.getListRecords());
-//                        enforcementProceeding.clickNext();
-//                    } else {
-////                        json = response.getJson("Ошибка сервиса");
-//                        error = "Ошибка сервиса";
-//                        break;
-//                    }
-//                }
-//            } while (enforcementProceeding.hasNext());
-//            json = response.getJson(recordList, error);
-//        }
-//        parser.tearsDown();
-//        return json;
-//    }
-
     @GetMapping("/person")
     public String getPerson(@RequestParam(value = "region") String region,
                             @RequestParam(value = "lastName") String lastName,
@@ -102,38 +44,42 @@ public class ParsingController {
             natural.setFirstName(firsName);
             natural.setPatronymic(patronymic);
             natural.setBirthDate(birthDate);
-            Captcha captcha = natural.clickFind();
-            if (natural.checkEmpty()) {
-                if (natural.checkWait()) {
+            natural.clickFind();
                     boolean hasNext;
                     String error = "";
                     EnforcementProceeding enforcementProceeding = null;
                     ArrayList<Record> recordList = new ArrayList<Record>();
                     do {
-                        if (!captcha.evaluateCaptcha()) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
+                        if (!natural.checkEmpty()) {
+                            error = "Извините, что-то пошло не так. Вы можете связаться со службой поддержки через fssp-support@drivedigital.ru, если проблема не устранена.";
+                            break;
+                        }
+                        if (!natural.checkWait()) {
+                            error = "Ваш запрос обрабатывается, попробуйте позже";
+                            break;
+                        }
+                        if (!natural.getCaptcha().evaluateCaptcha()) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
                             error = "Ошибка капчи";
                             break;
+                        }
+                        // Руками ввести капчу
+                        // Получаем страницу результата
+                        enforcementProceeding = new EnforcementProceeding(driver);
+                        if (enforcementProceeding.isCorrect()) {
+                            recordList.addAll(enforcementProceeding.getListRecords());
+                            hasNext = enforcementProceeding.clickNext();
                         } else {
-                            // Руками ввести капчу
-                            // Получаем страницу результата
-                            enforcementProceeding = new EnforcementProceeding(driver);
-                            if (enforcementProceeding.isCorrect()) {
-                                recordList.addAll(enforcementProceeding.getListRecords());
-                                hasNext = enforcementProceeding.clickNext();
-                            } else {
-                                error = "Ошибка сервиса";
-                                break;
-                            }
+                            error = "Ошибка сервиса";
+                            break;
                         }
                     } while (hasNext);
                     json = response.getJson(recordList, error);
-                } else {
-                    json= response.getJson("Ваш запрос обрабатывается, попробуйте позже");
-                }
-            } else {
-                json = response.getJson("Извините, что-то пошло не так. Вы можете связаться со службой поддержки через fssp-support@drivedigital.ru, если проблема не устранена.");
-            }
         }
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         parser.tearsDown();
         return json;
     }
@@ -154,38 +100,42 @@ public class ParsingController {
             json = response.getJson("Не совпадает md5 сумма");
         } else {
             legal.setInn(inn);
-            Captcha captcha = legal.clickFind();
-            if (legal.checkEmpty()) {
-                if (legal.checkWait()) {
-                    boolean hasNext;
-                    String error = "";
-                    EnforcementProceeding enforcementProceeding = null;
-                    ArrayList<Record> recordList = new ArrayList<Record>();
-                    do {
-                        if (!captcha.evaluateCaptcha()) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
-                            error = "Ошибка капчи";
-                            break;
-                        } else {
-                            // Руками ввести капчу
-                            // Получаем страницу результата
-                            enforcementProceeding = new EnforcementProceeding(driver);
-                            if (enforcementProceeding.isCorrect()) {
-                                recordList.addAll(enforcementProceeding.getListRecords());
-                                hasNext = enforcementProceeding.clickNext();
-                            } else {
-                                error = "Ошибка сервиса";
-                                break;
-                            }
-                        }
-                    } while (hasNext);
-                    json = response.getJson(recordList, error);
-                } else {
-                    json= response.getJson("Ваш запрос обрабатывается, попробуйте позже");
+            legal.clickFind();
+            boolean hasNext;
+            String error = "";
+            EnforcementProceeding enforcementProceeding = null;
+            ArrayList<Record> recordList = new ArrayList<Record>();
+            do {
+                if (!legal.checkEmpty()) {
+                    error = "Извините, что-то пошло не так. Вы можете связаться со службой поддержки через fssp-support@drivedigital.ru, если проблема не устранена.";
+                    break;
                 }
-            } else {
-                json = response.getJson("Извините, что-то пошло не так. Вы можете связаться со службой поддержки через fssp-support@drivedigital.ru, если проблема не устранена.");
-            }
+                if (!legal.checkWait()) {
+                    error = "Ваш запрос обрабатывается, попробуйте позже";
+                    break;
+                }
+                if (!legal.getCaptcha().evaluateCaptcha()) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
+                    error = "Ошибка капчи";
+                    break;
+                }
+                // Руками ввести капчу
+                // Получаем страницу результата
+                enforcementProceeding = new EnforcementProceeding(driver);
+                if (enforcementProceeding.isCorrect()) {
+                    recordList.addAll(enforcementProceeding.getListRecords());
+                    hasNext = enforcementProceeding.clickNext();
+                } else {
+                    error = "Ошибка сервиса";
+                    break;
+                }
+            } while (hasNext);
+            json = response.getJson(recordList, error);
         }
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         parser.tearsDown();
         return json;
     }
@@ -204,44 +154,44 @@ public class ParsingController {
         return name + "Cервис крутится, ФССП мутится";
     }
 
-    @GetMapping("/wav")
-    public String wav(@RequestParam(value = "inn", defaultValue = "7727672110") String inn) {
-        Parser parser = new Parser();
-        RemoteWebDriver driver = parser.getDriver();
-        Legal legal = new Legal(driver);
-
-        // Создаем генератор ответа
-        Response response = new Response();
-
-        String json;
-
-        // Проверяем md5
-        if (!legal.checkMd5()) {     // Не совпадает md5
-            json = response.getJson("Не совпадает md5 сумма");
-        } else {
-            legal.setInn(inn);
-
-
-            Captcha captcha = legal.clickFind();
-
-            String audioCaptchaUrl = captcha.getAudioCaptchaUrl();
-            if(!audioCaptchaUrl.isEmpty()) {
-                System.out.println(audioCaptchaUrl);
-                return audioCaptchaUrl;
-            }
-
-            boolean isCaptchaSuccess = captcha.evaluateCaptcha();
-
-            if (!isCaptchaSuccess) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
-                json = response.getJson("Ошибка капчи");
-            } else {
-                // Руками ввести капчу
-                // Получаем страницу результата
-                EnforcementProceeding enforcementProceeding = new EnforcementProceeding(driver);
-                json = response.getJson(enforcementProceeding.getListRecords());
-            }
-        }
-        parser.tearsDown();
-        return json;
-    }
+//    @GetMapping("/wav")
+//    public String wav(@RequestParam(value = "inn", defaultValue = "7727672110") String inn) {
+//        Parser parser = new Parser();
+//        RemoteWebDriver driver = parser.getDriver();
+//        Legal legal = new Legal(driver);
+//
+//        // Создаем генератор ответа
+//        Response response = new Response();
+//
+//        String json;
+//
+//        // Проверяем md5
+//        if (!legal.checkMd5()) {     // Не совпадает md5
+//            json = response.getJson("Не совпадает md5 сумма");
+//        } else {
+//            legal.setInn(inn);
+//
+//
+//            Captcha captcha = legal.clickFind();
+//
+//            String audioCaptchaUrl = captcha.getAudioCaptchaUrl();
+//            if(!audioCaptchaUrl.isEmpty()) {
+//                System.out.println(audioCaptchaUrl);
+//                return audioCaptchaUrl;
+//            }
+//
+//            boolean isCaptchaSuccess = captcha.evaluateCaptcha();
+//
+//            if (!isCaptchaSuccess) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
+//                json = response.getJson("Ошибка капчи");
+//            } else {
+//                // Руками ввести капчу
+//                // Получаем страницу результата
+//                EnforcementProceeding enforcementProceeding = new EnforcementProceeding(driver);
+//                json = response.getJson(enforcementProceeding.getListRecords());
+//            }
+//        }
+//        parser.tearsDown();
+//        return json;
+//    }
 }

@@ -40,8 +40,17 @@ public class Subject extends BasePage {
     @FindBy(how = How.XPATH, using = "//*[@id=\"btn-sbm\"]")
     private WebElement btnSbm;
 
-    public Captcha clickFind() {
+    public void clickFind() {
         click(btnSbm);
+        try {
+            Thread.sleep(1000);                 //Возможно появление уведомления Ваш запрос обрабатывается, попробуйте позже
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+//        return new Captcha(driver);
+    }
+
+    public Captcha getCaptcha() {
         return new Captcha(driver);
     }
 }
