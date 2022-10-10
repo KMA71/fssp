@@ -10,6 +10,15 @@ import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
 public class Captcha extends BasePage {
 
     public Captcha(RemoteWebDriver driver) {
@@ -90,8 +99,40 @@ public class Captcha extends BasePage {
         return super.getAudioCaptchaUrl();
     }
 
+    //TODO для чего этот метод?
     public String getFileWavUrl(String url) {
         driver.get(url);
         return super.getFileWavUrlUrl();
     }
+
+    public String getCaptchaDownloadUrl(String url) {
+        driver.get(url);
+        String pageSource = driver.getPageSource();
+        String substr = pageSource.substring(pageSource.indexOf("/files"), pageSource.indexOf("err") - 3);
+        String partUrl = url.substring(0, url.indexOf("/get_audio"));
+        String concatenated = partUrl + substr;
+        return concatenated;
+    }
+
+    public String downloadCaptchaWavFile(String url) {
+        //https://is-node5.fssp.gov.ru/files/capcha/fc8a4c4c82a34051af059529ad13ed01.wav
+//        try (InputStream in = new URL(url).openStream()) {
+//            Files.copy(in, Paths.get(url), StandardCopyOption.REPLACE_EXISTING);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+        String fileName = url.substring(url.indexOf("capcha/") + 7);
+        try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
+             FileOutputStream fileOutputStream = new FileOutputStream("./wav/" + fileName)) {
+            byte dataBuffer[] = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+                fileOutputStream.write(dataBuffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            return "ERROR SAVING WAV-FILE";
+        }
+        return fileName;
+    }
+
 }
