@@ -9,6 +9,7 @@ import com.rnb.fsbgrabe.parser.Parser;
 import com.rnb.fsbgrabe.parser.pageobjects.Captcha;
 import com.rnb.fsbgrabe.parser.pageobjects.Legal;
 import com.rnb.fsbgrabe.parser.pageobjects.Natural;
+import org.openqa.selenium.WindowType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
