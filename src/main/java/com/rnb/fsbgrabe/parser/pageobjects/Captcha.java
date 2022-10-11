@@ -1,6 +1,7 @@
 package com.rnb.fsbgrabe.parser.pageobjects;
 
 import com.rnb.fsbgrabe.capcha.RuCaptcha;
+import com.rnb.fsbgrabe.capcha.WhisperCaptcha;
 import com.rnb.fsbgrabe.parser.Parser;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -10,6 +11,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.springframework.ui.context.Theme;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,9 +137,13 @@ public class Captcha extends BasePage {
         return true;
     }
 
+/**В этом методе определяется способ разсопзнавания*/
     private String recCaptcha(String src) {
-        RuCaptcha ruCaptcha = new RuCaptcha();
-        return ruCaptcha.recognize(src);
+//        RuCaptcha ruCaptcha = new RuCaptcha();
+//        return ruCaptcha.recognize(src);
+
+        String wavCaptcha = recognizeWavUrl();
+        return wavCaptcha;
     }
 
 
@@ -154,10 +160,16 @@ public class Captcha extends BasePage {
         return super.getAudioCaptchaUrl();
     }
 
-    //TODO для чего этот метод?
-    public String getFileWavUrl(String url) {
-        driver.get(url);
-        return super.getFileWavUrlUrl();
+    public String recognizeWavUrl () {
+        String url = getAudioCaptchaUrl();              //получение url для получения url .wav
+        driver.switchTo().newWindow(WindowType.TAB);    //создание новой вкладки
+        driver.navigate().to(url);                      //загрузка в новую вкладку url
+        url = getCaptchaDownloadUrl(url);               //из содержимого новой вкладки вырезается url .wav прямая ссылка на скачивание
+        String wavFileName = downloadCaptchaWavFile(url);
+        ArrayList<String> tabs2 = new ArrayList<>(driver.getWindowHandles());
+        driver.switchTo().window(tabs2.get(0));
+        String recognized = new WhisperCaptcha().sendWavWithCurl(wavFileName);
+        return recognized;
     }
 
     public String getCaptchaDownloadUrl(String url) {
