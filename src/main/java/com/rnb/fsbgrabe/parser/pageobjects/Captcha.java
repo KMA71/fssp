@@ -40,37 +40,30 @@ public class Captcha extends BasePage {
      *
      * @return
      */
-    //TODO 11.10.2022 Осталось доделать получение результата, выделение ответа, преобразование в UTF
-    public boolean wavCaptcha(){
+        public boolean wavCaptcha(){
         String url = getAudioCaptchaUrl();              //получение url для получения url .wav
         driver.switchTo().newWindow(WindowType.TAB);    //создание новой вкладки
         driver.navigate().to(url);                      //загрузка в новую вкладку url
         url = getCaptchaDownloadUrl(url);               //из содержимого новой вкладки вырезается url .wav
         driver.navigate().to(url);                      //переход по url для скачивания содержимого .wav
-        System.out.println(url);
         url = url.substring(url.indexOf("/capcha/") + 8);
-        System.out.println(url);
         ArrayList<String> tabs2 = new ArrayList<String>(driver.getWindowHandles());                 //перечень закладок
         driver.navigate().to("http://10.97.9.9/audio_captcha");         //переход на страницу разбора ауди капчи
 
         By fileInput = By.cssSelector("input[type=file]");
         String filePath = "/home/selenium/Downloads/" + url;
-        System.out.println(filePath);
         driver.findElement(fileInput).sendKeys(filePath);
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         click(driver.findElement(By.xpath("//input[@type=\"submit\"]")));
 
-        try {
-            Thread.sleep(15000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        String captcha = (driver.getPageSource());
+        captcha = captcha.substring(captcha.indexOf("{\"result\": " ) + 12);
+        captcha = captcha.substring(0, captcha.indexOf("\", \"original\""));
+
+        captcha = unicodeToUtf8(captcha);
 
         driver.switchTo().window(tabs2.get(0));
+
+        setCaptchaCode(captcha);
 
         return  true;
     }
@@ -80,9 +73,10 @@ public class Captcha extends BasePage {
      * @return
      */
     public boolean evaluateCaptcha() {
-        String imgCaptcha = getImgCaptcha();
-        String recognized = recCaptcha(imgCaptcha);
-        setCaptchaCode(recognized);
+//        String imgCaptcha = getImgCaptcha();
+//        String recognized = recCaptcha(imgCaptcha);
+//        setCaptchaCode(recognized);
+        wavCaptcha();
         return getCaptchaSubmitSuccess();
     }
 
@@ -206,6 +200,29 @@ public class Captcha extends BasePage {
             return "ERROR SAVING WAV-FILE";
         }
         return fileName;
+    }
+
+    /**
+     * Преобразование unicode в utf8
+     * русские символы в ответе кодируются unicode \u041D\u043E (! Одиночный обратный слеш !)
+     * @param json
+     * @return
+     */
+    public String unicodeToUtf8(String json){
+        String result = "";
+        char[] chars = json.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            //if (chars[i] == '\\' && chars[i + 1] == '\\' && chars[i + 2] == 'u') {
+            if (chars[i] == '\\'  && chars[i + 1] == 'u') {
+                //result += (char) Integer.parseInt(new String(new char[]{chars[i + 3], chars[i + 4], chars[i + 5], chars[i + 6]}), 16);
+                result += (char) Integer.parseInt(new String(new char[]{chars[i + 2], chars[i + 3], chars[i + 4], chars[i + 5]}), 16);
+                //i += 6;
+                i += 5;
+            } else {
+                result += chars[i];
+            }
+        }
+        return result;
     }
 
 }

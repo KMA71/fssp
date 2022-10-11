@@ -46,35 +46,35 @@ public class ParsingController {
             natural.setPatronymic(patronymic);
             natural.setBirthDate(birthDate);
             natural.clickFind();
-                    boolean hasNext;
-                    String error = "";
-                    EnforcementProceeding enforcementProceeding = null;
-                    ArrayList<Record> recordList = new ArrayList<Record>();
-                    do {
-                        if (!natural.checkEmpty()) {
-                            error = "Извините, что-то пошло не так. Вы можете связаться со службой поддержки через fssp-support@drivedigital.ru, если проблема не устранена.";
-                            break;
-                        }
-                        if (!natural.checkWait()) {
-                            error = "Ваш запрос обрабатывается, попробуйте позже";
-                            break;
-                        }
-                        if (!natural.getCaptcha().evaluateCaptcha()) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
-                            error = "Ошибка капчи";
-                            break;
-                        }
-                        // Руками ввести капчу
-                        // Получаем страницу результата
-                        enforcementProceeding = new EnforcementProceeding(driver);
-                        if (enforcementProceeding.isCorrect()) {
-                            recordList.addAll(enforcementProceeding.getListRecords());
-                            hasNext = enforcementProceeding.clickNext();
-                        } else {
-                            error = "Ошибка сервиса";
-                            break;
-                        }
-                    } while (hasNext);
-                    json = response.getJson(recordList, error);
+            boolean hasNext;
+            String error = "";
+            EnforcementProceeding enforcementProceeding = null;
+            ArrayList<Record> recordList = new ArrayList<Record>();
+            do {
+                if (!natural.checkEmpty()) {
+                    error = "Извините, что-то пошло не так. Вы можете связаться со службой поддержки через fssp-support@drivedigital.ru, если проблема не устранена.";
+                    break;
+                }
+                if (!natural.checkWait()) {
+                    error = "Ваш запрос обрабатывается, попробуйте позже";
+                    break;
+                }
+                if (!natural.getCaptcha().evaluateCaptcha()) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
+                    error = "Ошибка капчи";
+                    break;
+                }
+                // Руками ввести капчу
+                // Получаем страницу результата
+                enforcementProceeding = new EnforcementProceeding(driver);
+                if (enforcementProceeding.isCorrect()) {
+                    recordList.addAll(enforcementProceeding.getListRecords());
+                    hasNext = enforcementProceeding.clickNext();
+                } else {
+                    error = "Ошибка сервиса";
+                    break;
+                }
+            } while (hasNext);
+            json = response.getJson(recordList, error);
         }
 //        try {
 //            Thread.sleep(5000);
