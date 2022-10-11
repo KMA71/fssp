@@ -3,15 +3,20 @@ package com.rnb.fsbgrabe.controller;
 import com.rnb.fsbgrabe.capcha.RuCaptcha;
 import com.rnb.fsbgrabe.models.EnforcementProceeding;
 import com.rnb.fsbgrabe.models.Person;
+import com.rnb.fsbgrabe.models.Record;
 import com.rnb.fsbgrabe.models.Response;
 import com.rnb.fsbgrabe.parser.Parser;
 import com.rnb.fsbgrabe.parser.pageobjects.Captcha;
 import com.rnb.fsbgrabe.parser.pageobjects.Legal;
 import com.rnb.fsbgrabe.parser.pageobjects.Natural;
+import org.openqa.selenium.WindowType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class ParsingController {
@@ -40,23 +45,42 @@ public class ParsingController {
             natural.setFirstName(firsName);
             natural.setPatronymic(patronymic);
             natural.setBirthDate(birthDate);
-
-            Captcha captcha = natural.clickFind();
-            boolean isCaptchaSuccess = captcha.evaluateCaptcha();
-
-            if (!isCaptchaSuccess) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
-                json = response.getJson("Ошибка капчи");
-            } else {
+            natural.clickFind();
+            boolean hasNext;
+            String error = "";
+            EnforcementProceeding enforcementProceeding = null;
+            ArrayList<Record> recordList = new ArrayList<Record>();
+            do {
+                if (!natural.checkEmpty()) {
+                    error = "Извините, что-то пошло не так. Вы можете связаться со службой поддержки через fssp-support@drivedigital.ru, если проблема не устранена.";
+                    break;
+                }
+                if (!natural.checkWait()) {
+                    error = "Ваш запрос обрабатывается, попробуйте позже";
+                    break;
+                }
+                if (!natural.getCaptcha().evaluateCaptcha()) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
+                    error = "Ошибка капчи";
+                    break;
+                }
                 // Руками ввести капчу
                 // Получаем страницу результата
-                EnforcementProceeding enforcementProceeding = new EnforcementProceeding(driver);
+                enforcementProceeding = new EnforcementProceeding(driver);
                 if (enforcementProceeding.isCorrect()) {
-                    json = response.getJson(enforcementProceeding.getListRecords());
+                    recordList.addAll(enforcementProceeding.getListRecords());
+                    hasNext = enforcementProceeding.clickNext();
                 } else {
-                    json = response.getJson("Ошибка сервиса");
+                    error = "Ошибка сервиса";
+                    break;
                 }
-            }
+            } while (hasNext);
+            json = response.getJson(recordList, error);
         }
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         parser.tearsDown();
         return json;
     }
@@ -77,24 +101,42 @@ public class ParsingController {
             json = response.getJson("Не совпадает md5 сумма");
         } else {
             legal.setInn(inn);
-
-
-            Captcha captcha = legal.clickFind();
-            boolean isCaptchaSuccess = captcha.evaluateCaptcha();
-
-            if (!isCaptchaSuccess) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
-                json = response.getJson("Ошибка капчи");
-            } else {
+            legal.clickFind();
+            boolean hasNext;
+            String error = "";
+            EnforcementProceeding enforcementProceeding = null;
+            ArrayList<Record> recordList = new ArrayList<Record>();
+            do {
+                if (!legal.checkEmpty()) {
+                    error = "Извините, что-то пошло не так. Вы можете связаться со службой поддержки через fssp-support@drivedigital.ru, если проблема не устранена.";
+                    break;
+                }
+                if (!legal.checkWait()) {
+                    error = "Ваш запрос обрабатывается, попробуйте позже";
+                    break;
+                }
+                if (!legal.getCaptcha().evaluateCaptcha()) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
+                    error = "Ошибка капчи";
+                    break;
+                }
                 // Руками ввести капчу
                 // Получаем страницу результата
-                EnforcementProceeding enforcementProceeding = new EnforcementProceeding(driver);
+                enforcementProceeding = new EnforcementProceeding(driver);
                 if (enforcementProceeding.isCorrect()) {
-                    json = response.getJson(enforcementProceeding.getListRecords());
+                    recordList.addAll(enforcementProceeding.getListRecords());
+                    hasNext = enforcementProceeding.clickNext();
                 } else {
-                    json = response.getJson("Ошибка сервиса");
+                    error = "Ошибка сервиса";
+                    break;
                 }
-            }
+            } while (hasNext);
+            json = response.getJson(recordList, error);
         }
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         parser.tearsDown();
         return json;
     }
@@ -127,7 +169,8 @@ public class ParsingController {
 
         legal.setInn(inn);
 
-        Captcha captcha = legal.clickFind();
+        legal.clickFind();
+        Captcha captcha = legal.getCaptcha();
 
         String audioCaptchaUrl = captcha.getAudioCaptchaUrl();
         if (!audioCaptchaUrl.isEmpty()) {
