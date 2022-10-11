@@ -21,8 +21,16 @@ public class Parser {
         return driver;
     }
 
-//    private String proxyAddress = "110.235.250.155:1080";
-    private String proxyAddress = "83.97.119.72:8085";
+    //    private String proxyAddress = "110.235.250.155:1080";
+//    private String proxyAddress = "87.239.111.225:10929";
+//    private String proxyAddress = "89.208.199.134:10929";
+
+//    private String proxyAddress = "fproxy.site";
+//    private String proxyPort = "13799";
+//    private String proxyUser = "YFUC2r";
+//    private String proxyPass = "PYY7aBhUFmAF";
+
+    private String proxyAddress = "fproxy.site:13799";
 
     public Parser() {
 //Прокси
@@ -31,7 +39,7 @@ public class Parser {
 
 //Запуск на удалённом сервере
         final DesiredCapabilities capabilities = new DesiredCapabilities();
-//
+//Прекрасно работает для статического прокси
 //        Proxy proxy = new Proxy();
 //        proxy.setAutodetect(false);
 //        proxy.setHttpProxy(proxyAddress);
@@ -39,8 +47,36 @@ public class Parser {
 //        capabilities.setCapability("proxy", proxy);
 //        capabilities.setCapability(CapabilityType.PROXY, proxy);
 
+//Не работает авторизация! 407 ошибка
+//
+//        System.getProperties().put("http.proxyHost", proxyAddress);
+//        System.getProperties().put("http.proxyPort", proxyPort);
+//        System.getProperties().put("https.proxyHost", proxyAddress);
+//        System.getProperties().put("https.proxyPort", proxyPort);
+//        Authenticator.setDefault(new Authenticator() {
+//            public PasswordAuthentication getPasswordAuthentication() {
+//                return new PasswordAuthentication(proxyUser, proxyPass.toCharArray());
+//            }
+//        });
+//        System.setProperty("http.proxyUser", proxyUser);
+//        System.setProperty("http.proxyPassword", proxyPass);
+//        System.setProperty("jdk.http.auth.tunneling.disabledSchemes", ""); //to remove basic auth scheme - JDK 8
+//        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyAddress, Integer.parseInt(proxyPort)));
+//        try {
+//            proxy = ClientConfig.defaultConfig()
+//                    .baseUrl(new URL(proxyAddress  + ":" + proxyPort))
+//                    .authenticateAs(new UsernameAndPassword(proxyUser, proxyPass))
+//                    .proxy();
+//        } catch (MalformedURLException e) {
+//            throw new RuntimeException(e);
+//        }
+
+
+//        capabilities.setCapability("proxy", proxy);
+
         capabilities.setBrowserName("chrome");
         capabilities.setVersion("97.0");
+//        capabilities.setVersion("96.0");
         capabilities.setCapability("enableVNC", true);
         capabilities.setCapability("enableVideo", false);
         capabilities.setCapability("screenResolution", "1920x1080x24");
