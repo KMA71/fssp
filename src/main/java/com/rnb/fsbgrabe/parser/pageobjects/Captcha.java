@@ -10,6 +10,8 @@ import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.util.List;
+
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -72,12 +74,22 @@ public class Captcha extends BasePage {
      * @return
      */
     public boolean getCaptchaSubmitSuccess() {
-        if (driver.findElements(By.xpath("//div[@class=\"b-form__label b-form__label--error\"]")).size() > 0) {          //проверяется есть ли текст с ошибкой
-            return false;
-        } else {
-//            return (driver.findElements(By.xpath("//*[text()=\"Введите код с картинки:\"]")).size() > 0);               //если ошибки нет, то проверяется, остались ли в этом окне
-            return true;
+//        if (driver.findElements(By.xpath("//div[@class=\"b-form__label b-form__label--error\"]")).size() > 0) {          //проверяется есть ли текст с ошибкой
+//            return false;
+//        } else {
+////            return (driver.findElements(By.xpath("//*[text()=\"Введите код с картинки:\"]")).size() > 0);               //если ошибки нет, то проверяется, остались ли в этом окне
+//            return true;
+//        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
+        List<WebElement> elems = driver.findElements(By.xpath("//div[@class=\"input\"]"));
+        if (elems.size() > 0) {
+            return elems.get(0).getAttribute("innerHTML").indexOf("Неверно введен код") == 0;
+        }
+        return true;
     }
 
     private String recCaptcha(String src) {

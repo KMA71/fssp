@@ -1,5 +1,6 @@
 package com.rnb.fsbgrabe.parser.pageobjects;
 
+import com.rnb.fsbgrabe.models.Subject;
 import com.rnb.fsbgrabe.parser.Parser;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -14,7 +15,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
  * Работа с физлицами
  */
 
-public class Natural extends BasePage implements Md5{
+public class Natural extends Subject implements Md5{
     private static final String md5Summ  = "849824d12f6055b0f696930569543f0a";
 
     public Natural(RemoteWebDriver driver) {
@@ -35,6 +36,20 @@ public class Natural extends BasePage implements Md5{
         html = driver.findElement(By.xpath("//div[@class=\"b-form b-reduced-field\"]")).getAttribute("innerHTML");
 
         return md5Summ.equals(get16Md5(html));
+    }
+
+    /**
+     * Проверка всех возможных ошибок и возврат имеющихся
+     * @return
+     */
+    public String getError(){
+        if (checkWait()){
+            return "Ваш запрос обрабатывается, попробуйте позже";
+        }
+        if (checkWait()){
+            return "Извините, что-то пошло не так. Вы можете связаться со службой поддержки через fssp-support@drivedigital.ru, если проблема не устранена.";
+        }
+        return "";
     }
 
     /**
@@ -92,11 +107,11 @@ public class Natural extends BasePage implements Md5{
     /**
      * Найти
      */
-    @FindBy(how = How.XPATH, using = "//*[@id=\"btn-sbm\"]")
-    private WebElement btnSbm;
-
-    public Captcha clickFind() {
-        click(btnSbm);
-        return new Captcha(driver);
-    }
+//    @FindBy(how = How.XPATH, using = "//*[@id=\"btn-sbm\"]")
+//    private WebElement btnSbm;
+//
+//    public Captcha clickFind() {
+//        click(btnSbm);
+//        return new Captcha(driver);
+//    }
 }

@@ -27,4 +27,17 @@ public class Response {
         return ret;
     }
 
+    public String getJson(ArrayList<Record> listRecords, String error) {
+        String ret = "{\"result\":[";
+        for (int i = 0; i < listRecords.size(); i++) {
+            ret = ret + listRecords.get(i).getJson();
+            if (i < listRecords.size() - 1) {
+                ret = ret + ',';
+            }
+        }
+        ret = ret + "],";
+        ret = ret + "\"error\": \"" + error + "\"}";
+        return ret;
+    }
+
 }
