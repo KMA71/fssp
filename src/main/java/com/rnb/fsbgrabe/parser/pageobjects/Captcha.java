@@ -4,12 +4,14 @@ import com.rnb.fsbgrabe.capcha.RuCaptcha;
 import com.rnb.fsbgrabe.parser.Parser;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.WindowType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import java.io.BufferedInputStream;
@@ -29,12 +31,59 @@ public class Captcha extends BasePage {
         PageFactory.initElements(this.driver, this);
     }
 
+    /**
+     * Метод выполняющий все действия через UI в отдельной вкладке
+     * Не доделан
+     *
+     *
+     * @return
+     */
+    //TODO 11.10.2022 Осталось доделать получение результата, выделение ответа, преобразование в UTF
+    public boolean wavCaptcha(){
+        String url = getAudioCaptchaUrl();              //получение url для получения url .wav
+        driver.switchTo().newWindow(WindowType.TAB);    //создание новой вкладки
+        driver.navigate().to(url);                      //загрузка в новую вкладку url
+        url = getCaptchaDownloadUrl(url);               //из содержимого новой вкладки вырезается url .wav
+        driver.navigate().to(url);                      //переход по url для скачивания содержимого .wav
+        System.out.println(url);
+        url = url.substring(url.indexOf("/capcha/") + 8);
+        System.out.println(url);
+        ArrayList<String> tabs2 = new ArrayList<String>(driver.getWindowHandles());                 //перечень закладок
+        driver.navigate().to("http://10.97.9.9/audio_captcha");         //переход на страницу разбора ауди капчи
+
+        By fileInput = By.cssSelector("input[type=file]");
+        String filePath = "/home/selenium/Downloads/" + url;
+        System.out.println(filePath);
+        driver.findElement(fileInput).sendKeys(filePath);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        click(driver.findElement(By.xpath("//input[@type=\"submit\"]")));
+
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        driver.switchTo().window(tabs2.get(0));
+
+        return  true;
+    }
+
+    /**
+     * Работа с ruCaptcha
+     * @return
+     */
     public boolean evaluateCaptcha() {
         String imgCaptcha = getImgCaptcha();
         String recognized = recCaptcha(imgCaptcha);
         setCaptchaCode(recognized);
         return getCaptchaSubmitSuccess();
     }
+
     /**
      * Получение капчи
      */
