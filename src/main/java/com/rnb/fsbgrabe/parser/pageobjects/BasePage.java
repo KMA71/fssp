@@ -106,10 +106,11 @@ public class BasePage {
      */
     public String getAudioCaptchaUrl() {
         List<String> netLogs = pullExtraInfoLogs();
-        netLogs.removeIf(s -> (!s.contains("https://is-node5.fssp.gov.ru/get_audio_captcha")));
+//        netLogs.removeIf(s -> (!s.contains("https://is-node5.fssp.gov.ru/get_audio_captcha")));
+        netLogs.removeIf(s -> (!s.contains(".fssp.gov.ru/get_audio_captcha")));
         String result = netLogs.get(0);
-
-        result = result.substring(result.indexOf("https://is-node5.fssp.gov.ru/get_audio_captcha"));
+//        result = result.substring(result.indexOf("https://is-node5.fssp.gov.ru/get_audio_captcha"));
+        result = result.substring(result.indexOf("https://is-node"));
         result = result.substring(0, result.indexOf("\"},"));
         return result;
     }
