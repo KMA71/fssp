@@ -1,10 +1,14 @@
 package com.rnb.fsbgrabe.capcha;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -22,6 +26,30 @@ import java.util.*;
 public class WhisperCaptcha {
     SSLContext currentSc;
 
+    public String sendWavWithCurl(String fileName) {
+        String command = "curl -X POST -F file=@./wav/" + fileName + " 10.97.9.9/audio_captcha";
+        String result = "ошибка распознавания аудиокапчи";
+        try {
+            Process process = Runtime.getRuntime().exec(command);
+            InputStream is = process.getInputStream();
+
+            ByteArrayOutputStream res = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+
+            for (int length; (length = is.read(buffer)) != -1; ) {
+                res.write(buffer, 0, length);
+            }
+            result = res.toString("UTF-8"); // {"result": "\u0435\u0441\u04326\u0442", "original": " ESV6T \ub290\ub08c"}
+            System.out.println("BEFORE: " + result);
+            result = result.substring(result.indexOf(":") + 3, result.indexOf("\","));
+            result = unicodeToUtf8(result);
+
+        } catch (IOException e) {
+            throw new RuntimeException(result, e);
+        }
+        //TODO удалить wav
+        return result;
+    }
     public String sendWavToRecognize(String fileNameWav) {
         disableSSL();
         HttpClient client = HttpClient.newHttpClient();
@@ -120,6 +148,31 @@ public class WhisperCaptcha {
         return HttpRequest.BodyPublishers.ofByteArrays(byteArrays);
     }
 
+
+
+
+    /**
+     * Преобразование unicode в utf8
+     * русские символы в ответе кодируются unicode \u041D\u043E (! Одиночный обратный слеш !)
+     * @param json
+     * @return
+     */
+    public String unicodeToUtf8(String json){
+        String result = "";
+        char[] chars = json.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            //if (chars[i] == '\\' && chars[i + 1] == '\\' && chars[i + 2] == 'u') {
+            if (chars[i] == '\\'  && chars[i + 1] == 'u') {
+                //result += (char) Integer.parseInt(new String(new char[]{chars[i + 3], chars[i + 4], chars[i + 5], chars[i + 6]}), 16);
+                result += (char) Integer.parseInt(new String(new char[]{chars[i + 2], chars[i + 3], chars[i + 4], chars[i + 5]}), 16);
+                //i += 6;
+                i += 5;
+            } else {
+                result += chars[i];
+            }
+        }
+        return result;
+    }
 
     private void enableSSL() {
         SSLContext.setDefault(currentSc);
