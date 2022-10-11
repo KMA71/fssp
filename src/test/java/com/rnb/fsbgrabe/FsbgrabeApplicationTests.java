@@ -26,7 +26,7 @@ class FsbgrabeApplicationTests {
     void sendWavTest() {
         String fileName = "09fbb421413079fe9d8df365487fcaf4.wav";
         WhisperCaptcha whisper = new WhisperCaptcha();
-        String recognized = whisper.sendWavToRecognize(fileName);
+        String recognized = whisper.sendWavWithCurl(fileName);
         System.out.println(recognized);
     }
 

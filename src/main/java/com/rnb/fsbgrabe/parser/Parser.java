@@ -30,7 +30,7 @@ public class Parser {
 //    private String proxyUser = "YFUC2r";
 //    private String proxyPass = "PYY7aBhUFmAF";
 
-    private String proxyAddress = "fproxy.site:13799";
+    private String proxyAddress = "ac.mobileproxy.space:64613";
 
     public Parser() {
 //Прокси
@@ -40,12 +40,12 @@ public class Parser {
 //Запуск на удалённом сервере
         final DesiredCapabilities capabilities = new DesiredCapabilities();
 //Прекрасно работает для статического прокси
-//        Proxy proxy = new Proxy();
-//        proxy.setAutodetect(false);
-//        proxy.setHttpProxy(proxyAddress);
-//        proxy.setSslProxy(proxyAddress);
-//        capabilities.setCapability("proxy", proxy);
-//        capabilities.setCapability(CapabilityType.PROXY, proxy);
+        Proxy proxy = new Proxy();
+        proxy.setAutodetect(false);
+        proxy.setHttpProxy(proxyAddress);
+        proxy.setSslProxy(proxyAddress);
+        capabilities.setCapability("proxy", proxy);
+        capabilities.setCapability(CapabilityType.PROXY, proxy);
 
 //Не работает авторизация! 407 ошибка
 //
@@ -70,9 +70,6 @@ public class Parser {
 //        } catch (MalformedURLException e) {
 //            throw new RuntimeException(e);
 //        }
-
-
-//        capabilities.setCapability("proxy", proxy);
 
         capabilities.setBrowserName("chrome");
         capabilities.setVersion("97.0");
