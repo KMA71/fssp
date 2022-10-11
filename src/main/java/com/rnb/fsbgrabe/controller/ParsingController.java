@@ -168,7 +168,8 @@ public class ParsingController {
 
         legal.setInn(inn);
 
-        Captcha captcha = legal.clickFind();
+        legal.clickFind();
+        Captcha captcha = legal.getCaptcha();
 
         String audioCaptchaUrl = captcha.getAudioCaptchaUrl();
         if (!audioCaptchaUrl.isEmpty()) {
