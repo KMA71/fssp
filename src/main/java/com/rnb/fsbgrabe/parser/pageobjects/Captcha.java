@@ -73,10 +73,10 @@ public class Captcha extends BasePage {
      * @return
      */
     public boolean evaluateCaptcha() {
-//        String imgCaptcha = getImgCaptcha();
-//        String recognized = recCaptcha(imgCaptcha);
-//        setCaptchaCode(recognized);
-        wavCaptcha();
+        String imgCaptcha = getImgCaptcha();
+        String recognized = recCaptcha(imgCaptcha);
+        setCaptchaCode(recognized);
+//        wavCaptcha();
         return getCaptchaSubmitSuccess();
     }
 
@@ -139,11 +139,11 @@ public class Captcha extends BasePage {
 
 /**В этом методе определяется способ разсопзнавания*/
     private String recCaptcha(String src) {
-//        RuCaptcha ruCaptcha = new RuCaptcha();
-//        return ruCaptcha.recognize(src);
-
-        String wavCaptcha = recognizeWavUrl();
-        return wavCaptcha;
+        RuCaptcha ruCaptcha = new RuCaptcha();
+        return ruCaptcha.recognize(src);
+//
+//        String wavCaptcha = recognizeWavUrl();
+//        return wavCaptcha;
     }
 
 
