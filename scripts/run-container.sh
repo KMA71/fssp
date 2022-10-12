@@ -1,7 +1,5 @@
 #!/bin/bash
 
-IMAGE_KEY="small"
-IMAGE_NAME="kma7/$IMAGE_KEY-fssp-image"
 CONTAINER_NAME="application"
 
 docker container stop $CONTAINER_NAME

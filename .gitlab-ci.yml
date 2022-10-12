@@ -1,0 +1,45 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  TAG: $CI_COMMIT_REF_NAME
+  IMAGE_NAME: $CI_REGISTRY/kurdyukov_ma/$CI_PROJECT_NAME:lastest
+
+build-job: 
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  stage: build
+  tags:
+    - api-test
+  script:
+    - mvn clean install -DskipTests=true
+    - docker build . -t $IMAGE_NAME
+    - docker push $IMAGE_NAME
+  when: manual
+
+
+.deploy-job:
+    before_script:
+        - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+        - which ssh-agent || ( apk add openssh-client )
+        - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+        - eval $(ssh-agent -s)
+        - echo "$SSH_PRIVATE_KEY" | ssh-add -
+        - ssh-keyscan $HOST >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+deploy-dev:
+    extends:
+        - .deploy-job
+    environment:
+        name: development
+    stage: deploy
+    tags:
+        - api-test
+    script:
+        - HOST_DEPLOY=$DEPLOY_USER@$HOST
+        - set -e
+        - scp -r ./scripts/run-container.sh $HOST_DEPLOY:$APP_PATH/run-containter.sh
+        - ssh $HOST_DEPLOY "echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY"
+        - ssh $HOST_DEPLOY "chmod +x $APP_PATH/run-containter.sh && IMAGE_NAME=$IMAGE_NAME $APP_PATH/run-containter.sh"
+    when: manual
