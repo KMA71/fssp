@@ -39,13 +39,13 @@ public class Parser {
 
 //Запуск на удалённом сервере
         final DesiredCapabilities capabilities = new DesiredCapabilities();
-////Прекрасно работает для статического прокси
-//        Proxy proxy = new Proxy();
-//        proxy.setAutodetect(false);
-//        proxy.setHttpProxy(proxyAddress);
-//        proxy.setSslProxy(proxyAddress);
-//        capabilities.setCapability("proxy", proxy);
-//        capabilities.setCapability(CapabilityType.PROXY, proxy);
+//Прекрасно работает для статического прокси
+        Proxy proxy = new Proxy();
+        proxy.setAutodetect(false);
+        proxy.setHttpProxy(proxyAddress);
+        proxy.setSslProxy(proxyAddress);
+        capabilities.setCapability("proxy", proxy);
+        capabilities.setCapability(CapabilityType.PROXY, proxy);
 
 //Не работает авторизация! 407 ошибка
 //
