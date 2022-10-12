@@ -1,0 +1,40 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  TAG: $CI_COMMIT_REF_NAME
+  IMAGE_NAME: $CI_REGISTRY/Kurdyukov_MA/$CI_PROJECT_NAME:$TAG
+
+build-job: 
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  stage: build
+  script:
+    - mvn clean install -DskipTests=true
+    - docker build . -t $IMAGE_NAME
+    - docker push $IMAGE_NAME
+  only:
+    - tags
+
+
+.deploy-job:
+    before_script:
+        - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+        - which ssh-agent || ( apk add openssh-client )
+        - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+        - eval $(ssh-agent -s)
+        - echo "$SSH_PRIVATE_KEY" | ssh-add -
+        - ssh-keyscan $HOST >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+deploy-dev:
+    extends:
+        - .deploy-job
+    environment:
+        name: development
+    stage: deploy
+    script:
+        - HOST_DEPLOY=$DEPLOY_USER@$HOST
+        - set -e
+        - scp -r ./docker-compose.yml $HOST_DEPLOY:$APP_PATH/docker-compose.yml
+        - ssh $HOST_DEPLOY "cd $APP_PATH && docker-compose up -d --remove-orphans --force-recreate"
