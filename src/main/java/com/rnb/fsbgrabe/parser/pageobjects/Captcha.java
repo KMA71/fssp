@@ -13,6 +13,12 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.springframework.ui.context.Theme;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +32,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class Captcha extends BasePage {
-
+    SSLContext currentSc;
     public Captcha(RemoteWebDriver driver) {
         super(driver);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()=\"Введите код с картинки:\"]")));
@@ -139,11 +145,11 @@ public class Captcha extends BasePage {
 
 /**В этом методе определяется способ разсопзнавания*/
     private String recCaptcha(String src) {
-        RuCaptcha ruCaptcha = new RuCaptcha();
-        return ruCaptcha.recognize(src);
-//
-//        String wavCaptcha = recognizeWavUrl();
-//        return wavCaptcha;
+//        RuCaptcha ruCaptcha = new RuCaptcha();
+//        return ruCaptcha.recognize(src);
+
+        String wavCaptcha = recognizeWavUrl();
+        return wavCaptcha;
     }
 
 
@@ -188,6 +194,7 @@ public class Captcha extends BasePage {
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
+        disableSSL();
         String fileName = url.substring(url.indexOf("capcha/") + 7);
         try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
              FileOutputStream fileOutputStream = new FileOutputStream("./wav/" + fileName)) {
@@ -199,6 +206,7 @@ public class Captcha extends BasePage {
         } catch (IOException e) {
             return "ERROR SAVING WAV-FILE";
         }
+        enableSSL();
         return fileName;
     }
 
@@ -223,6 +231,43 @@ public class Captcha extends BasePage {
             }
         }
         return result;
+    }
+
+
+    private void enableSSL() {
+        SSLContext.setDefault(currentSc);
+    }
+
+    private void disableSSL() {
+
+        try {
+            this.currentSc = SSLContext.getInstance("SSL");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
+
+                }
+        };
+
+        SSLContext sc = currentSc;
+        try {
+            sc.init(null, trustAllCerts, null);
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+        SSLContext.setDefault(sc);
     }
 
 }
