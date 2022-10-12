@@ -4,7 +4,7 @@ stages:
 
 variables:
   TAG: $CI_COMMIT_REF_NAME
-  IMAGE_NAME: $CI_REGISTRY/kurdyukov_ma/$CI_PROJECT_NAME:$TAG
+  IMAGE_NAME: $CI_REGISTRY/kurdyukov_ma/$CI_PROJECT_NAME:lastest
 
 build-job: 
   before_script:
