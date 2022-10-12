@@ -36,5 +36,5 @@ deploy-dev:
     script:
         - HOST_DEPLOY=$DEPLOY_USER@$HOST
         - set -e
-        - scp -r ./docker-compose.yml $HOST_DEPLOY:$APP_PATH/docker-compose.yml
-        - ssh $HOST_DEPLOY "cd $APP_PATH && docker-compose up -d --remove-orphans --force-recreate"
+        - scp -r ./scripts/run-container.sh $HOST_DEPLOY:$APP_PATH/run-containter.sh
+        - ssh $HOST_DEPLOY "run-containter.sh"
