@@ -10,7 +10,7 @@ build-job:
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   stage: build
-  tag:
+  tags:
     - api-test
   script:
     - mvn clean install -DskipTests=true
@@ -35,7 +35,7 @@ deploy-dev:
     environment:
         name: development
     stage: deploy
-    tag:
+    tags:
         - api-test
     script:
         - HOST_DEPLOY=$DEPLOY_USER@$HOST
