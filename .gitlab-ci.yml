@@ -16,8 +16,7 @@ build-job:
     - mvn clean install -DskipTests=true
     - docker build . -t $IMAGE_NAME
     - docker push $IMAGE_NAME
-  rules:
-    then: manual
+  then: manual
 
 
 .deploy-job:
@@ -43,5 +42,4 @@ deploy-dev:
         - scp -r ./scripts/run-container.sh $HOST_DEPLOY:$APP_PATH/run-containter.sh
         - ssh $HOST_DEPLOY "echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY"
         - ssh $HOST_DEPLOY "chmod +x $APP_PATH/run-containter.sh && IMAGE_NAME=$IMAGE_NAME $APP_PATH/run-containter.sh"
-    rules:
-      then: manual
+    then: manual
