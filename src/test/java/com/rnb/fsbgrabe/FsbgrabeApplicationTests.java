@@ -7,10 +7,16 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 
 @SpringBootTest
 class FsbgrabeApplicationTests {
@@ -38,6 +44,45 @@ class FsbgrabeApplicationTests {
 
     @Test
     void getFileTest() {
+        SSLContext currentSc = null;
+        try {
+            currentSc = SSLContext.getDefault();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        try {
+            currentSc = SSLContext.getInstance("SSL");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
+
+                }
+        };
+
+        SSLContext sc = currentSc;
+        try {
+            sc.init(null, trustAllCerts, null);
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+        SSLContext.setDefault(sc);
+
+
+
         String url = "https://autoins.ru/upload/file/Subiekt_RF_list.pdf";
         String fileName = "Subiekt_RF_list.pdf";
         try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
