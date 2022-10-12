@@ -41,4 +41,4 @@ deploy-dev:
         - HOST_DEPLOY=$DEPLOY_USER@$HOST
         - set -e
         - scp -r ./scripts/run-container.sh $HOST_DEPLOY:$APP_PATH/run-containter.sh
-        - ssh $HOST_DEPLOY "run-containter.sh"
+        - ssh $HOST_DEPLOY "chmod +x run-containter.sh && run-containter.sh"
