@@ -8,7 +8,7 @@ COPY --chown=builder:builder run.sh run.sh
 
 FROM openjdk:11-jre-slim
 RUN groupadd -g 1001 -r app && useradd -u 1001 -r -g app app
-RUN apt-get install curl -y
+RUN apt-get update && apt-get install curl -y
 USER app
 
 WORKDIR /application
