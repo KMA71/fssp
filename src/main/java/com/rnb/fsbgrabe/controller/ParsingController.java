@@ -8,6 +8,7 @@ import com.rnb.fsbgrabe.models.Response;
 import com.rnb.fsbgrabe.parser.Parser;
 import com.rnb.fsbgrabe.parser.pageobjects.Captcha;
 import com.rnb.fsbgrabe.parser.pageobjects.Legal;
+import com.rnb.fsbgrabe.parser.pageobjects.LegalByName;
 import com.rnb.fsbgrabe.parser.pageobjects.Natural;
 import org.openqa.selenium.WindowType;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -101,6 +102,69 @@ public class ParsingController {
             json = response.getJson("Не совпадает md5 сумма");
         } else {
             legal.setInn(inn);
+            legal.clickFind();
+            boolean hasNext;
+            String error = "";
+            EnforcementProceeding enforcementProceeding = null;
+            ArrayList<Record> recordList = new ArrayList<Record>();
+            do {
+                if (!legal.checkEmpty()) {
+                    error = "Извините, что-то пошло не так. Вы можете связаться со службой поддержки через fssp-support@drivedigital.ru, если проблема не устранена.";
+                    break;
+                }
+                if (!legal.checkWait()) {
+                    error = "Ваш запрос обрабатывается, попробуйте позже";
+                    break;
+                }
+                if (!legal.getCaptcha().evaluateCaptcha()) {                   // При ручном вводе ошибочной капчи Ошибка не отлавливается !
+                    error = "Ошибка капчи";
+                    break;
+                }
+                // Руками ввести капчу
+                // Получаем страницу результата
+                enforcementProceeding = new EnforcementProceeding(driver);
+                if (enforcementProceeding.isCorrect()) {
+                    recordList.addAll(enforcementProceeding.getListRecords());
+                    hasNext = enforcementProceeding.clickNext();
+                } else {
+                    error = "Ошибка сервиса";
+                    break;
+                }
+            } while (hasNext);
+            json = response.getJson(recordList, error);
+        }
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+        parser.tearsDown();
+        return json;
+    }
+
+    @GetMapping("/legalbycode")
+    public String legalByCode(@RequestParam(value = "code") String code,
+                              @RequestParam(value = "name") String name) {
+        Parser parser = new Parser();
+        RemoteWebDriver driver = parser.getDriver();
+        LegalByName legal = new LegalByName(driver);
+
+        // Создаем генератор ответа
+        Response response = new Response();
+
+        String json;
+
+        // Проверяем md5
+        if (!legal.checkMd5()) {     // Не совпадает md5
+            json = response.getJson("Не совпадает md5 сумма");
+        } else {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            legal.setRegionByCode(code);
+            legal.setName(name);
             legal.clickFind();
             boolean hasNext;
             String error = "";
