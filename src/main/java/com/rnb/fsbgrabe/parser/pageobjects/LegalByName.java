@@ -2,6 +2,7 @@ package com.rnb.fsbgrabe.parser.pageobjects;
 
 import com.rnb.fsbgrabe.models.Subject;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.FindBy;
@@ -141,12 +142,13 @@ public class LegalByName extends Subject implements Md5 {
 
     public void setRegionByName(String value) {
         click(region);
-        setTextField(region.findElement(By.xpath(".//input")), value);
+        setTextField(region.findElement(By.xpath(".//input")), value + Keys.RETURN);
     }
 
     public void setRegionByCode(String value) {
         click(region);
-        setTextField(region.findElement(By.xpath(".//input")), hashmap.get(value));
+        System.out.println(hashmap.get(value));
+        setTextField(region.findElement(By.xpath(".//input")), hashmap.get(value) + Keys.RETURN);
     }
 
     /**
