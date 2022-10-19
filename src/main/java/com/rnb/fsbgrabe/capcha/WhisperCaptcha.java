@@ -5,10 +5,7 @@ import org.apache.tomcat.util.http.fileupload.IOUtils;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -47,7 +44,9 @@ public class WhisperCaptcha {
         } catch (IOException e) {
             throw new RuntimeException(result, e);
         }
-        //TODO удалить wav
+
+        File wavFile = new File("./wav/" + fileName);
+        wavFile.delete();
         return result;
     }
     public String sendWavToRecognize(String fileNameWav) {
