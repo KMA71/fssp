@@ -158,11 +158,6 @@ public class ParsingController {
         if (!legal.checkMd5()) {     // Не совпадает md5
             json = response.getJson("Не совпадает md5 сумма");
         } else {
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
             legal.setRegionByCode(code);
             legal.setName(name);
             legal.clickFind();
