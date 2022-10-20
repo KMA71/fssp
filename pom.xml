@@ -14,7 +14,7 @@
 	<name>fsbgrabe</name>
 	<description>parsing fssp</description>
 	<properties>
-		<java.version>12</java.version>
+		<java.version>11</java.version>
 <!--		<java.version>11</java.version>-->
 		<selenium-java.version>4.5.0</selenium-java.version>
 	</properties>
